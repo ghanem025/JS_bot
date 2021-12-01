@@ -53,7 +53,7 @@ client.on('interactionCreate', async interaction => {//create interactions with 
   }
   else if (commandName === 'user'){// when the /user command is called
     //we print out the users info
-    await interaction.reply('user info.');
+    await interaction.reply(`Your tag: ${interaction.user.tag}\nYour id: ${interaction.user.id}`);
   }
 });
 
