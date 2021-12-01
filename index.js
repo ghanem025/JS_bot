@@ -2,8 +2,25 @@
 require('dotenv').config();
 const { Client, Intents } = require('discord.js');
 const fetch = require('node-fetch')
-
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+
+const {SlashCommandBuilder} = require('@discordjs/builders');
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
+const {clientId, guildId, token } = require('./config.json');// used our config.JSON file to obtain clientId guildId and token
+
+const commands =
+[
+  new SlashCommandBuilder().setName('server').setDescription('server info'),// set server command (enter /server)
+  new SlashCommandBuilder().setName('user').setDescription('user info') //set user command (enter /user)
+].map(command => command.toJSON());// map the commands to a JSON
+
+const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
+
+rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
+        .then(() => console.log('Successfully registered application commands.'))
+        .catch(console.error);
+
 
 const monkeArray = [
   "https://tenor.com/view/leon-side-eyes-leon-ok-and-leon-monkey-eyes-side-eyes-ok-and-gif-22597413",
@@ -21,10 +38,26 @@ const monkeArray = [
   "https://tenor.com/view/monkey-aquapark-glasses-based-gif-22841182",
   "https://tenor.com/view/dance-happy-gorilla-enjoying-dancing-gif-17773698"
 ]
+client.on("ready",()=> {
+  console.log('logged in as ${client.user.tag}!')
+});
+
+
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isCommand()) return;
+
+  const { commandName } = interaction;
+
+  if(commandName === 'server'){
+    await interaction.reply(`Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}`);
+  }
+  else if (commandName === 'user'){
+    await interaction.reply('user info.');
+  }
+});
 
 function getJoke(){
   return fetch("https://v2.jokeapi.dev/joke/Any")
-
     .then(res => {
       return res.json()
     })
@@ -32,26 +65,18 @@ function getJoke(){
       return data['setup'] + ' ..... ' + data['delivery']
     })
 }
-client.on("ready",()=> {
-  console.log('logged in as ${client.user.tag}!')
-});
-
 
 
 client.on('messageCreate', (message) => {
   if (message.author.bot) return
-  if (message.content === 'ping'){
-    message.reply('pong')
-  }
   if(message.content === '!monke'){
     const monkeGIF = monkeArray[Math.floor(Math.random() * monkeArray.length)]
     message.channel.send(monkeGIF)
   }
-  if(message.content === '$joke'){
+  if(message.content === '!joke'){
     getJoke().then(jokes =>
       message.channel.send(jokes))
   }
-
 })
 
 client.login(process.env.TOKEN);
