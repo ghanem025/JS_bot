@@ -17,12 +17,12 @@ const commands =
 
 const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 
-rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
+rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })//registered application commands for a specific guildId (specific server)
         .then(() => console.log('Successfully registered application commands.'))
         .catch(console.error);
 
 
-const monkeArray = [
+const monkeArray = [// array of moneky gifs
   "https://tenor.com/view/leon-side-eyes-leon-ok-and-leon-monkey-eyes-side-eyes-ok-and-gif-22597413",
   "https://tenor.com/view/monkey-cool-monkey-monkey-eating-pog-monkey-snub-nosed-monkey-gif-21132579",
   "https://tenor.com/view/money-rich-monkey-wealthy-monkey-business-gif-17154331",
@@ -38,45 +38,47 @@ const monkeArray = [
   "https://tenor.com/view/monkey-aquapark-glasses-based-gif-22841182",
   "https://tenor.com/view/dance-happy-gorilla-enjoying-dancing-gif-17773698"
 ]
-client.on("ready",()=> {
+client.on("ready",()=> {//when the client is connected print out a confirmation statement
   console.log('logged in as ${client.user.tag}!')
 });
 
 
-client.on('interactionCreate', async interaction => {
+client.on('interactionCreate', async interaction => {//create interactions with bot
   if (!interaction.isCommand()) return;
-
   const { commandName } = interaction;
 
-  if(commandName === 'server'){
+  if(commandName === 'server'){// when the /server command is called
+    //print out the servers name and the member count of the server
     await interaction.reply(`Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}`);
   }
-  else if (commandName === 'user'){
+  else if (commandName === 'user'){// when the /user command is called
+    //we print out the users info
     await interaction.reply('user info.');
   }
 });
 
-function getJoke(){
+
+function getJoke(){//this is an API that fetchs a random joke and creates a JSON for the bot to read
   return fetch("https://v2.jokeapi.dev/joke/Any")
     .then(res => {
       return res.json()
     })
     .then (data => {
-      return data['setup'] + ' ..... ' + data['delivery']
+      return data['setup'] + ' ..... ' + data['delivery']//format our JSON object array
     })
 }
 
 
-client.on('messageCreate', (message) => {
+client.on('messageCreate', (message) => {//this checks if a user sent a specific string
   if (message.author.bot) return
-  if(message.content === '!monke'){
+  if(message.content === '!monke'){// if the !monke string is sent we post a random gif
     const monkeGIF = monkeArray[Math.floor(Math.random() * monkeArray.length)]
-    message.channel.send(monkeGIF)
+    message.channel.send(monkeGIF)//send message to the channel
   }
-  if(message.content === '!joke'){
+  if(message.content === '!joke'){// if the !joke string is sent we post a random joke from our API
     getJoke().then(jokes =>
-      message.channel.send(jokes))
+      message.channel.send(jokes))//send randomly generated joke to a channel
   }
 })
 
-client.login(process.env.TOKEN);
+client.login(process.env.TOKEN);//login with our bot token
