@@ -1,0 +1,22 @@
+{
+  "name": "js_bot",
+  "version": "1.0.0",
+  "description": "Discord bot created using javascript and disocrd API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ghanem025/JS_bot.git"
+  },
+  "author": "Ghanem",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ghanem025/JS_bot/issues"
+  },
+  "homepage": "https://github.com/ghanem025/JS_bot#readme",
+  "dependencies": {
+    "discord.js": "^13.3.1"
+  }
+}
