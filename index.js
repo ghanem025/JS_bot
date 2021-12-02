@@ -1,6 +1,6 @@
 
 require('dotenv').config();
-const { Client, Intents } = require('discord.js');
+const {Client, Collection, Intents} = require('discord.js');
 const fetch = require('node-fetch')
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 const {SlashCommandBuilder} = require('@discordjs/builders');
@@ -8,34 +8,15 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const {clientId, guildId, token } = require('./config.json');// used our config.JSON file to obtain clientId guildId and token
 const fs = require('fs');
-const {Client, Collection, Intents} = require('discord.js')
 
 client.commands = new Collection();// allows us to access commands from other files
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
-
 for (const file of commandFiles){
   const command = require(`./commands/${file}`);
   //this will set a new item in the Collection
   client.commands.set(command.data.name, command);
 }
 // now we are going to dynamically retrieve the command files
-
-
-
-const commands =
-[
-  new SlashCommandBuilder().setName('server').setDescription('server info'),// set server command (enter /server)
-  new SlashCommandBuilder().setName('user').setDescription('user info') //set user command (enter /user)
-].map(command => command.toJSON());// map the commands to a JSON
-
-const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
-
-rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })//registered application commands for a specific guildId (specific server)
-        .then(() => console.log('Successfully registered application commands.'))
-        .catch(console.error);
-
-
-
 
 const monkeArray = [// array of moneky gifs
   "https://tenor.com/view/leon-side-eyes-leon-ok-and-leon-monkey-eyes-side-eyes-ok-and-gif-22597413",
@@ -53,39 +34,27 @@ const monkeArray = [// array of moneky gifs
   "https://tenor.com/view/monkey-aquapark-glasses-based-gif-22841182",
   "https://tenor.com/view/dance-happy-gorilla-enjoying-dancing-gif-17773698"
 ]
+
 client.on("ready",()=> {//when the client is connected print out a confirmation statement
   console.log('logged in as ${client.user.tag}!')
 });
-
 
 client.on('interactionCreate', async interaction => {//create interactions with bot
   if (!interaction.isCommand()) return;
   const { commandName } = interaction;
 
-  const command = client.commands.get(interaction.commandName);
+  const command = client.commands.get(interaction.commandName);//get the command name from interaction(what the user sent)
 
-  if(!command) return;
+	if (!command) return;// if there are no commands return
 
-  try {
-    await command.execute(interaction);
-  }catch(error){
-    console.error(error);
-    await interaction.reply({content : 'There was an error while executing this command!', ephemeral: true});
-  }
+	try {
+		await command.execute(interaction);//wait for command to be sent by bot
+	} catch (error) {
+		console.error(error);// catch any unexpected errors and return message.
+		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+	}
 
-  if(commandName === 'ping'){
-    await interaction.reply('Pong');
-  }
-  if(commandName === 'server'){// when the /server command is called
-    //print out the servers name and the member count of the server
-    await interaction.reply(`Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}`);
-  }
-  else if (commandName === 'user'){// when the /user command is called
-    //we print out the users info
-    await interaction.reply(`Your tag: ${interaction.user.tag}\nYour id: ${interaction.user.id}`);
-  }
 });
-
 
 function getJoke(){//this is an API that fetchs a random joke and creates a JSON for the bot to read
   return fetch("https://v2.jokeapi.dev/joke/Any")
@@ -96,7 +65,6 @@ function getJoke(){//this is an API that fetchs a random joke and creates a JSON
       return data['setup'] + ' ..... ' + data['delivery']//format our JSON object array
     })
 }
-
 
 client.on('messageCreate', (message) => {//this checks if a user sent a specific string
   if (message.author.bot) return
