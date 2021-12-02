@@ -11,8 +11,15 @@ const fs = require('fs');
 const {Client, Collection, Intents} = require('discord.js')
 
 client.commands = new Collection();// allows us to access commands from other files
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
 
+for (const file of commandFiles){
+  const command = require(`./commands/${file}`);
+  //this will set a new item in the Collection
+  client.commands.set(command.data.name, command);
+}
 // now we are going to dynamically retrieve the command files
+
 
 
 const commands =
@@ -54,6 +61,17 @@ client.on("ready",()=> {//when the client is connected print out a confirmation 
 client.on('interactionCreate', async interaction => {//create interactions with bot
   if (!interaction.isCommand()) return;
   const { commandName } = interaction;
+
+  const command = client.commands.get(interaction.commandName);
+
+  if(!command) return;
+
+  try {
+    await command.execute(interaction);
+  }catch(error){
+    console.error(error);
+    await interaction.reply({content : 'There was an error while executing this command!', ephemeral: true});
+  }
 
   if(commandName === 'ping'){
     await interaction.reply('Pong');
