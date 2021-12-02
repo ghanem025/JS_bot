@@ -3,11 +3,17 @@ require('dotenv').config();
 const { Client, Intents } = require('discord.js');
 const fetch = require('node-fetch')
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
-
 const {SlashCommandBuilder} = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const {clientId, guildId, token } = require('./config.json');// used our config.JSON file to obtain clientId guildId and token
+const fs = require('fs');
+const {Client, Collection, Intents} = require('discord.js')
+
+client.commands = new Collection();// allows us to access commands from other files
+
+// now we are going to dynamically retrieve the command files
+
 
 const commands =
 [
@@ -20,6 +26,8 @@ const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })//registered application commands for a specific guildId (specific server)
         .then(() => console.log('Successfully registered application commands.'))
         .catch(console.error);
+
+
 
 
 const monkeArray = [// array of moneky gifs
@@ -47,6 +55,9 @@ client.on('interactionCreate', async interaction => {//create interactions with 
   if (!interaction.isCommand()) return;
   const { commandName } = interaction;
 
+  if(commandName === 'ping'){
+    await interaction.reply('Pong');
+  }
   if(commandName === 'server'){// when the /server command is called
     //print out the servers name and the member count of the server
     await interaction.reply(`Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}`);
