@@ -89,6 +89,10 @@ function cruelWorld(message){
     .then(message => client.destroy())
 }
 
+function sendImage(message,str){//function that can quickly implement sending different images
+  message.channel.send({files: [str]});
+}
+
 client.on('messageCreate', (message) => {//this checks if a user sent a specific string
   if (message.author.bot) return
   // if(message.content === '!joke'){// if the !joke string is sent we post a random joke from our API
@@ -97,7 +101,7 @@ client.on('messageCreate', (message) => {//this checks if a user sent a specific
   // }
   switch (message.content.toLowerCase()){
     case "!disgust":
-      message.channel.send({files: ['./tom.png']});
+      sendImage(message,'./tom.png')
       break;
     case '!dream':
       message.channel.send('https://www.youtube.com/watch?v=T78nq62aQgM')//send randomly generated joke to a channel
@@ -113,8 +117,6 @@ client.on('messageCreate', (message) => {//this checks if a user sent a specific
       reboot(message)
       break;
   }
-
-
 })
 
 client.login(process.env.TOKEN);//login with our bot token
