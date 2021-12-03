@@ -96,6 +96,9 @@ client.on('messageCreate', (message) => {//this checks if a user sent a specific
   //     message.channel.send(jokes))//send randomly generated joke to a channel
   // }
   switch (message.content.toLowerCase()){
+    case "!disgust":
+      message.channel.send({files: ['./tom.png']});
+      break;
     case '!dream':
       message.channel.send('https://www.youtube.com/watch?v=T78nq62aQgM')//send randomly generated joke to a channel
       break;
