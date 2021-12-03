@@ -81,8 +81,9 @@ function getJoke(){//this is an API that fetchs a random joke and creates a JSON
 function reboot(message){
   message.channel.send("rebooting bot... please wait")
   .then(message => client.destroy())
-  .then(() => client.login(client.login(process.env.TOKEN)))
+  .then(() => client.login(process.env.TOKEN))
 }
+
 function cruelWorld(message){
     message.channel.send('Goodbye cruel world')
     .then(message => client.destroy())
@@ -104,6 +105,9 @@ client.on('messageCreate', (message) => {//this checks if a user sent a specific
       break;
     case '!die':
       cruelWorld(message)
+      break;
+    case '!revive':
+      reboot(message)
       break;
   }
 
