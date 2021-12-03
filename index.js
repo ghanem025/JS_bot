@@ -17,12 +17,10 @@ for (const file of eventfiles){
   const event = require(`./events/${file}`)
   if(event.once){
     client.once(event.name,(...args) => event.execute(...args));
-
   }
   else{
     client.on(event.name,(...args) => event.execute(...args))
   }
-
 }
 
 client.commands = new Collection();// allows us to access commands from other files
@@ -56,12 +54,10 @@ client.on("ready",()=> {//when the client is connected print out a confirmation 
 });
 
 client.on('interactionCreate', async interaction => {//create interactions with bot
-  console.log(`${interaction.user.tag} in #${interaction.channel.name} triggered an interaction.`);
   if (!interaction.isCommand()) return;
   const { commandName } = interaction;
 
   const command = client.commands.get(interaction.commandName);//get the command name from interaction(what the user sent)
-
 	if (!command) return;// if there are no commands return
 
 	try {
@@ -70,7 +66,6 @@ client.on('interactionCreate', async interaction => {//create interactions with 
 		console.error(error);// catch any unexpected errors and return message.
 		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 	}
-
 });
 
 function getJoke(){//this is an API that fetchs a random joke and creates a JSON for the bot to read
@@ -83,19 +78,36 @@ function getJoke(){//this is an API that fetchs a random joke and creates a JSON
     })
 }
 
+function reboot(message){
+  message.channel.send("rebooting bot... please wait")
+  .then(message => client.destroy())
+  .then(() => client.login(client.login(process.env.TOKEN)))
+}
+function cruelWorld(message){
+    message.channel.send('Goodbye cruel world')
+    .then(message => client.destroy())
+}
+
 client.on('messageCreate', (message) => {//this checks if a user sent a specific string
   if (message.author.bot) return
-  if(message.content === '!monke'){// if the !monke string is sent we post a random gif
-    const monkeGIF = monkeArray[Math.floor(Math.random() * monkeArray.length)]
-    message.channel.send(monkeGIF)//send message to the channel
-  }
-  if(message.content === '!joke'){// if the !joke string is sent we post a random joke from our API
-    getJoke().then(jokes =>
-      message.channel.send(jokes))//send randomly generated joke to a channel
-  }
-  if(message.content === '!dream'){// if the !joke string is sent we post a random joke from our API
+  // if(message.content === '!joke'){// if the !joke string is sent we post a random joke from our API
+  //   getJoke().then(jokes =>
+  //     message.channel.send(jokes))//send randomly generated joke to a channel
+  // }
+  switch (message.content.toLowerCase()){
+    case '!dream':
       message.channel.send('https://www.youtube.com/watch?v=T78nq62aQgM')//send randomly generated joke to a channel
+      break;
+    case '!monke':
+      const monkeGIF = monkeArray[Math.floor(Math.random() * monkeArray.length)]
+      message.channel.send(monkeGIF)//send message to the channel
+      break;
+    case '!die':
+      cruelWorld(message)
+      break;
   }
+
+
 })
 
 client.login(process.env.TOKEN);//login with our bot token
