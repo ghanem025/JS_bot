@@ -9,6 +9,22 @@ const { Routes } = require('discord-api-types/v9');
 const {clientId, guildId, token } = require('./config.json');// used our config.JSON file to obtain clientId guildId and token
 const fs = require('fs');
 
+
+//reading event commandFiles
+const eventfiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'))
+const events = new Collection()
+for (const file of eventfiles){
+  const event = require(`./events/${file}`)
+  if(event.once){
+    client.once(event.name,(...args) => event.execute(...args));
+
+  }
+  else{
+    client.on(event.name,(...args) => event.execute(...args))
+  }
+
+}
+
 client.commands = new Collection();// allows us to access commands from other files
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
 for (const file of commandFiles){
@@ -40,6 +56,7 @@ client.on("ready",()=> {//when the client is connected print out a confirmation 
 });
 
 client.on('interactionCreate', async interaction => {//create interactions with bot
+  console.log(`${interaction.user.tag} in #${interaction.channel.name} triggered an interaction.`);
   if (!interaction.isCommand()) return;
   const { commandName } = interaction;
 
