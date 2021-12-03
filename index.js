@@ -36,7 +36,7 @@ const monkeArray = [// array of moneky gifs
 ]
 
 client.on("ready",()=> {//when the client is connected print out a confirmation statement
-  console.log('logged in as ${client.user.tag}!')
+  console.log(`logged in as ${client.user.tag}!`)
 });
 
 client.on('interactionCreate', async interaction => {//create interactions with bot
@@ -57,12 +57,12 @@ client.on('interactionCreate', async interaction => {//create interactions with 
 });
 
 function getJoke(){//this is an API that fetchs a random joke and creates a JSON for the bot to read
-  return fetch("https://v2.jokeapi.dev/joke/Any")
+  return fetch("https://zenquotes.io/api/random")
     .then(res => {
       return res.json()
     })
     .then (data => {
-      return data['setup'] + ' ..... ' + data['delivery']//format our JSON object array
+      return data[0]['q']//format our JSON object array
     })
 }
 
@@ -75,6 +75,9 @@ client.on('messageCreate', (message) => {//this checks if a user sent a specific
   if(message.content === '!joke'){// if the !joke string is sent we post a random joke from our API
     getJoke().then(jokes =>
       message.channel.send(jokes))//send randomly generated joke to a channel
+  }
+  if(message.content === '!dream'){// if the !joke string is sent we post a random joke from our API
+      message.channel.send('https://www.youtube.com/watch?v=T78nq62aQgM')//send randomly generated joke to a channel
   }
 })
 
