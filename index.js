@@ -95,11 +95,10 @@ function sendImage(message,str){//function that can quickly implement sending di
 
 client.on('messageCreate', (message) => {//this checks if a user sent a specific string
   if (message.author.bot) return
-  // if(message.content === '!joke'){// if the !joke string is sent we post a random joke from our API
-  //   getJoke().then(jokes =>
-  //     message.channel.send(jokes))//send randomly generated joke to a channel
-  // }
   switch (message.content.toLowerCase()){
+    case "!whoasked":
+      message.channel.send('https://tenor.com/view/nobody-asked-nasa-satellite-nasa-asked-nobody-cares-gif-16192897')//send randomly generated joke to a channel
+      break
     case "!disgust":
       sendImage(message,'./tom.png')
       break;
